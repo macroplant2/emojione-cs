@@ -11,7 +11,17 @@ namespace Emojione {
     /// <summary>
     /// 
     /// </summary>
-    public static class Emojione {
+    public class Emojione {
+
+        private static string _imagePathPng = "//cdn.jsdelivr.net/emojione/assets/png/";
+        private static string _imagePathSvg = "//cdn.jsdelivr.net/emojione/assets/svg/";
+        private static string _imagePathSvgSprites = "./../assets/sprites/emojione.sprites.svg";
+        private static string _imageType = "png"; // or svg
+        private static bool _sprites = false; // if this is true then sprite markup will be used (if SVG image type is set then you must include the SVG sprite file locally)
+        private static bool _unicodeAlt = true; // use the unicode char as the alt attribute (makes copy and pasting the resulting text better)
+        private static bool _ascii = false; // change to true to convert ascii smileys
+        private static string _cacheBustParam = "?v=1.2.4"; // you can [optionally] modify this to force browsers to refresh their cache. it will be appended to the send of the filenames
+
 
         //private static bool _ascii = false; // convert ascii smileys
         private static string _image_path = "/img/eo/"; // path to emoji images (without leading slash)
@@ -30,78 +40,112 @@ namespace Emojione {
             @"<i\s+class=""eo\s+eo-(?:[A-F0-9-]+)""[^>]*>(?<alt2>[^<]+)</i>|" +
             @"<i\s+class=""eo\s+eo-[^""]+""\s*>(?<alt3>[^<]+)</i>";
 
-
-
         /// <summary>
-        /// Returns the shortname corresponding to the specified codepoint.
+        /// Takes an input string containing both native unicode emoji and shortnames, and translates it into emoji images for display.
         /// </summary>
-        /// <param name="codepoint"></param>
-        /// <returns>Returns a string, or <c>null</c> if there is no mapping from the specified codepoint to shortname.</returns>
-        public static string GetShortnameFromCodepoint(string codepoint) {
-            string shortname = null;
-            if (codepoint != null) {
-                _codepoint_to_shortname.TryGetValue(codepoint.ToLower(), out shortname);
-            }
-            return shortname;
+        /// <param name="str">The input string.</param>
+        /// <param name="unicodeAlt"><c>true</c> to use the unicode char instead of the shortname as the alt attribute (makes copy and pasting the resulting text better).</param>
+        /// <param name="svg"><c>true</c> to use output svg markup instead of png</param>
+        /// <param name="sprites"><c>true</c> to enable sprite mode instead of individual images.</param>
+        /// <returns>A string with appropriate html for rendering emoji.</returns>
+        public static string ToImage(string str, bool unicodeAlt = false, bool svg = false, bool sprites = false) {
+            // TODO: handle svg and spritres
+            // first pass changes unicode characters into emoji markup.
+            str = UnicodeToImage(str, svg);
+            // second pass changes any shortnames into emoji markup.
+            str = ShortnameToImage(str);
+            return str;
         }
 
         /// <summary>
-        /// Returns the codepoint corresponding to the specified ascii emoji.
+        /// Unifies all emoji to their standard unicode types. 
         /// </summary>
-        /// <param name="ascii"></param>
-        /// <returns>Returns a string, or <c>null</c> if there is no mapping from the specified ascii emoji to codepoint.</returns>
-        public static string GetCodepointFromAscii(string ascii) {
-            string codepoint = null;
-            if (ascii != null) {
-                _ascii_to_codepoint.TryGetValue(ascii, out codepoint);
-            }
-            return codepoint;
+        /// <param name="str">The input string.</param>
+        /// <returns>A string with standardized unicode.</returns>
+        public static string UnifyUnicode(string str) {
+            // transform all unicode into a standard shortname
+            str = ToShort(str);
+            // then transform the shortnames into unicode
+            str = ShortnameToUnicode(str);
+            return str;
         }
 
         /// <summary>
-        /// Returns the codepoint corresponding to the specified shortname.
-        /// </summary>
-        /// <param name="shortname"></param>
-        /// <returns>Returns a string, or <c>null</c> if there is no mapping from the specified shortname to codepoint.</returns>
-        public static string GetCodepointFromShortname(string shortname) {
-            string codepoint = null;
-            if (shortname != null) {
-                _shortname_to_codepoint.TryGetValue(shortname.ToLower(), out codepoint);
-            }
-            return codepoint;
-        }
-
-        /// <summary>
-        /// Converts ascii emojis to unicode.
+        /// Converts shortname emojis to unicode, useful for sending emojis back to mobile devices.
         /// </summary>
         /// <param name="str"></param>
-        /// <returns></returns>
-        public static string AsciiToUnicode(string str) {
+        /// <param name="ascii"><c>true</c> to also output unicode from ascii emoji</param>
+        /// <returns>A string with unicode replacements</returns>
+        public static string ShortnameToUnicode(string str, bool ascii = false) {
+            // TODO: ascii
             if (str != null) {
-                str = Regex.Replace(str, IGNORE_PATTERN + "|" + ASCII_PATTERN, AsciiToUnicodeCallback);
+                str = Regex.Replace(str, IGNORE_PATTERN + "|" + SHORTNAME_PATTERN, ShortnameToUnicodeCallback, RegexOptions.IgnoreCase);
             }
             return str;
         }
 
-        private static string AsciiToUnicodeCallback(Match match) {
-            var ascii = match.Value;
-            // check if the emoji exists in our dictionary
-            if (_ascii_to_codepoint.ContainsKey(ascii)) {
-                // convert codepoint to unicode char
-                return ToUnicode(_ascii_to_codepoint[ascii]);
-            }
-            // we didn't find a replacement so just return the entire match
-            return match.Value;
+        /// <summary>
+        /// This will replace shortnames with their ascii equivalent, e.g. :wink: -> ;^. 
+        /// This is useful for systems that don't support unicode or images.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns>A string with ascii replacements.</returns>
+        public static string ShortnameToAscii(string input) {
+            throw new NotImplementedException();
         }
 
         /// <summary>
         /// Takes input containing emoji shortnames and converts it to emoji images.
         /// </summary>
         /// <param name="str"></param>
-        /// <returns></returns>
-        public static string ShortnameToImage(string str) {
+        /// <param name="unicodeAlt"><c>true</c> to use the unicode char instead of the shortname as the alt attribute (makes copy and pasting the resulting text better).</param>
+        /// <param name="svg"><c>true</c> to use output svg markup instead of png</param>
+        /// <param name="sprites"><c>true</c> to enable sprite mode instead of individual images.</param>
+        /// <returns>A string with appropriate html for rendering emoji.</returns>
+        public static string ShortnameToImage(string str, bool unicodeAlt = false, bool svg = false, bool sprites = false) {
+            // TODO: handle parms
             if (str != null) {
                 str = Regex.Replace(str, IGNORE_PATTERN + "|" + SHORTNAME_PATTERN, ShortnameToImageCallback, RegexOptions.IgnoreCase);
+            }
+            return str;
+        }
+
+        /// <summary>
+        /// Converts unicode emoji to shortnames.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string ToShort(string str) {
+            if (str != null) {
+                str = Regex.Replace(str, IGNORE_PATTERN + "|" + UNICODE_PATTERN, UnicodeToShortnameCallback);
+            }
+            return str;
+        }
+
+        /// <summary>
+        /// Takes native unicode emoji input, such as that from your mobile device, and outputs image markup (png or svg).
+        /// </summary>
+        /// <param name="str">The input string</param>
+        /// <param name="unicodeAlt"><c>true</c> to use the unicode char instead of the shortname as the alt attribute (makes copy and pasting the resulting text better).</param>
+        /// <param name="svg"><c>true</c> to use output svg markup instead of png</param>
+        /// <param name="sprites"><c>true</c> to enable sprite mode instead of individual images.</param>
+        /// <returns>A string with appropriate html for rendering emoji.</returns>
+        public static string UnicodeToImage(string str, bool unicodeAlt = false, bool svg = false, bool sprites = false) {
+            // TODO: handle svg
+            if (str != null) {
+                str = Regex.Replace(str, IGNORE_PATTERN + "|" + UNICODE_PATTERN, UnicodeToImageCallback);
+            }
+            return str;
+        }
+
+        /// <summary>
+        /// Converts ascii emojis to unicode, e.g. :) -> 😄.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string AsciiToUnicode(string str) {
+            if (str != null) {
+                str = Regex.Replace(str, IGNORE_PATTERN + "|" + ASCII_PATTERN, AsciiToUnicodeCallback);
             }
             return str;
         }
@@ -116,6 +160,57 @@ namespace Emojione {
                 html = Regex.Replace(html, IMAGE_PATTERN, ImageToShortnameCallback, RegexOptions.IgnoreCase);
             }
             return html;
+        }
+
+
+        /// <summary>
+        /// Returns the shortname corresponding to the specified codepoint.
+        /// </summary>
+        /// <param name="codepoint"></param>
+        /// <returns>Returns a string, or <c>null</c> if there is no mapping from the specified codepoint to shortname.</returns>
+        private static string GetShortnameFromCodepoint(string codepoint) {
+            string shortname = null;
+            if (codepoint != null) {
+                _codepoint_to_shortname.TryGetValue(codepoint.ToLower(), out shortname);
+            }
+            return shortname;
+        }
+
+        /// <summary>
+        /// Returns the codepoint corresponding to the specified ascii emoji.
+        /// </summary>
+        /// <param name="ascii"></param>
+        /// <returns>Returns a string, or <c>null</c> if there is no mapping from the specified ascii emoji to codepoint.</returns>
+        private static string GetCodepointFromAscii(string ascii) {
+            string codepoint = null;
+            if (ascii != null) {
+                _ascii_to_codepoint.TryGetValue(ascii, out codepoint);
+            }
+            return codepoint;
+        }
+
+        /// <summary>
+        /// Returns the codepoint corresponding to the specified shortname.
+        /// </summary>
+        /// <param name="shortname"></param>
+        /// <returns>Returns a string, or <c>null</c> if there is no mapping from the specified shortname to codepoint.</returns>
+        private static string GetCodepointFromShortname(string shortname) {
+            string codepoint = null;
+            if (shortname != null) {
+                _shortname_to_codepoint.TryGetValue(shortname.ToLower(), out codepoint);
+            }
+            return codepoint;
+        }
+
+        private static string AsciiToUnicodeCallback(Match match) {
+            var ascii = match.Value;
+            // check if the emoji exists in our dictionary
+            if (_ascii_to_codepoint.ContainsKey(ascii)) {
+                // convert codepoint to unicode char
+                return ToUnicode(_ascii_to_codepoint[ascii]);
+            }
+            // we didn't find a replacement so just return the entire match
+            return match.Value;
         }
 
         private static string ImageToShortnameCallback(Match match) {
@@ -158,18 +253,6 @@ namespace Emojione {
             return match.Value;
         }
 
-        /// <summary>
-        /// Converts shortname emojis to unicode, useful for sending emojis back to mobile devices.
-        /// </summary>
-        /// <param name="str"></param>
-        /// <returns></returns>
-        public static string ShortnameToUnicode(string str) {
-            if (str != null) {
-                str = Regex.Replace(str, IGNORE_PATTERN + "|" + SHORTNAME_PATTERN, ShortnameToUnicodeCallback, RegexOptions.IgnoreCase);
-            }
-            return str;
-        }
-
         private static string ShortnameToUnicodeCallback(Match match) {
             var shortname = match.Value;
             // check if the emoji exists in our dictionary
@@ -180,19 +263,6 @@ namespace Emojione {
 
             // we didn't find a replacement so just return the entire match
             return match.Value;
-        }
-
-
-        /// <summary>
-        /// Takes native unicode emoji input, such as that from your mobile device, and translates it directly to emoji images.
-        /// </summary>
-        /// <param name="str"></param>
-        /// <returns></returns>
-        public static string UnicodeToImage(string str) {
-            if (str != null) {
-                str = Regex.Replace(str, IGNORE_PATTERN + "|" + UNICODE_PATTERN, UnicodeToImageCallback);
-            }
-            return str;
         }
 
         private static string UnicodeToImageCallback(Match match) {
@@ -212,18 +282,6 @@ namespace Emojione {
             return match.Value;
         }
 
-        /// <summary>
-        /// Converts unicode emoji to shortnames.
-        /// </summary>
-        /// <param name="str"></param>
-        /// <returns></returns>
-        public static string UnicodeToShortname(string str) {
-            if (str != null) {
-                str = Regex.Replace(str, IGNORE_PATTERN + "|" + UNICODE_PATTERN, UnicodeToShortnameCallback);
-            }
-            return str;
-        }
-
         private static string UnicodeToShortnameCallback(Match match) {
             var unicode = match.Groups[1].Value;
             var codepoint = ToCodePoint(unicode);
@@ -231,28 +289,6 @@ namespace Emojione {
                 return _codepoint_to_shortname[codepoint];
             }
             return match.Value;
-        }
-
-        /// <summary>
-        /// Takes an input string containing both native unicode emoji and shortnames, and translates it into emoji images for display.
-        /// </summary>
-        /// <param name="str"></param>
-        /// <returns></returns>
-        public static string ToImage(string str) {
-            str = UnicodeToImage(str);
-            str = ShortnameToImage(str);
-            return str;
-        }
-
-        /// <summary>
-        /// Unifies all emoji to their unicode types.
-        /// </summary>
-        /// <param name="str"></param>
-        /// <returns></returns>
-        public static string UnifyUnicode(string str) {
-            str = UnicodeToShortname(str);
-            str = ShortnameToUnicode(str);
-            return str;
         }
 
         /// <summary>
