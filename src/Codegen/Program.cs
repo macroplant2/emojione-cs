@@ -25,49 +25,22 @@ namespace Codegen {
             program.OutputDir = Environment.CurrentDirectory;
             program.Execute();
         }
-        
+
         /// <summary>
         /// Executes the task.
         /// </summary>
         /// <returns></returns>
         public bool Execute() {
             try {
-
-                var emojis = new Dictionary<string, Emoji>();
-                var categories = new HashSet<string>();
-
-                // load emoji_strategy.json
+                // load emoji.json
                 string json = File.ReadAllText(EmojiFile);
 
                 // parse it
-                dynamic dict = JsonConvert.DeserializeObject(json);
-                foreach (var item in dict) {
-                    var emoji = new Emoji();
-                    emoji.Unicode = item.Value.unicode;
+                var emojis = JsonConvert.DeserializeObject<Dictionary<string, Emoji>>(json);
 
-                    foreach (dynamic alternate in item.Value.unicode_alternates) {
-                        emoji.Alternates.Add(alternate.Value);
-                    }
-
-                    emoji.Name = item.Value.name;
-                    emoji.Shortname = item.Value.shortname;
-                    emoji.Category = item.Value.category;
-
-                    emoji.EmojiOrder = int.Parse(item.Value.emoji_order.Value);
-
-                    foreach (dynamic alias in item.Value.aliases) {
-                        emoji.Aliases.Add(alias.Value);
-                    }
-
-                    foreach (dynamic ascii in item.Value.aliases_ascii) {
-                        emoji.Asciis.Add(ascii.Value);
-                    }
-
-                    foreach (dynamic keyword in item.Value.keywords) {
-                        emoji.Keywords.Add(keyword.Value);
-                    }
-
-                    emojis.Add(item.Name, emoji);
+                // get categories
+                var categories = new HashSet<string>();
+                foreach (var emoji in emojis.Values) {
                     categories.Add(emoji.Category);
                 }
 
@@ -105,15 +78,19 @@ namespace Codegen {
                     for (int i = 0; i < emojis.Count; i++) {
                         var emoji = emojis.ElementAt(i).Value;
                         sw.Write(ToSurrogateString(emoji.Unicode));
-                        if (emoji.Alternates.Any()) {
+                        if (!string.IsNullOrEmpty(emoji.Alternates)) {
                             sw.Write("|");
-                            for (int j = 0; j < emoji.Alternates.Count; j++) {
-                                sw.Write(ToSurrogateString(emoji.Alternates[j]));
-                                if (j < emoji.Alternates.Count - 1) {
-                                    sw.Write("|");
-                                }
-                            }
+                            sw.Write(ToSurrogateString(emoji.Alternates));
                         }
+                        //if (emoji.Alternates.Any()) {
+                        //    sw.Write("|");
+                        //    for (int j = 0; j < emoji.Alternates.Count; j++) {
+                        //        sw.Write(ToSurrogateString(emoji.Alternates[j]));
+                        //        if (j < emoji.Alternates.Count - 1) {
+                        //            sw.Write("|");
+                        //        }
+                        //    }
+                        //}
                         if (i < emojis.Count - 1) {
                             sw.Write("|");
                         }
@@ -154,15 +131,18 @@ namespace Codegen {
                     for (int i = 0; i < emojis.Count; i++) {
                         var emoji = emojis.ElementAt(i).Value;
                         sw.Write(@"            {{""{0}"", ""{1}""}}", emoji.Unicode.ToLower(), emoji.Shortname);
-                        if (emoji.Alternates.Any()) {
+                        if (!string.IsNullOrEmpty(emoji.Alternates)) {
                             sw.WriteLine(",");
-                            for (int j = 0; j < emoji.Alternates.Count; j++) {
-                                sw.Write(@"            {{""{0}"", ""{1}""}}", emoji.Alternates[j].ToLower(), emoji.Shortname);
-                                if (j < emoji.Alternates.Count - 1) {
-                                    sw.WriteLine(",");
-                                }
-                            }
+                            sw.Write(@"            {{""{0}"", ""{1}""}}", emoji.Alternates.ToLower(), emoji.Shortname);
                         }
+                        //    sw.WriteLine(",");
+                        //    for (int j = 0; j < emoji.Alternates.Count; j++) {
+                        //        sw.Write(@"            {{""{0}"", ""{1}""}}", emoji.Alternates[j].ToLower(), emoji.Shortname);
+                        //        if (j < emoji.Alternates.Count - 1) {
+                        //            sw.WriteLine(",");
+                        //        }
+                        //    }
+                        //}
                         if (i < emojis.Count - 1) {
                             sw.WriteLine(",");
                         }
@@ -253,10 +233,10 @@ namespace Codegen {
             }
         }
 
-        
+
     }
 
-    
+
 }
 
 
