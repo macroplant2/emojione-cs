@@ -311,44 +311,7 @@ namespace Emojione.Tests {
             actual = ToSurrogateString("1f600");
             Assert.AreEqual(expected, actual);
         }
-
-        [TestMethod]
-        public void ImageToShortname() {
-            string html = @"I am an <i class=""eo eo-1F47D"" title="":alien:"">👽</i>";
-            string actual = Emojione.ImageToShortname(html);
-            string expected = "I am an :alien:";
-            Assert.AreEqual(expected, actual);
-
-            html = @"I am an <i class=""eo eo-alien"">:alien:</i>";
-            actual = Emojione.ImageToShortname(html);
-            expected = "I am an :alien:";
-            Assert.AreEqual(expected, actual);
-
-            html = @"I am an <img class=""eo"" src=""/img/eo/1F47D.svg"" alt="":alien:"" />";
-            actual = Emojione.ImageToShortname(html);
-            expected = "I am an :alien:";
-            Assert.AreEqual(expected, actual);
-
-            html = @"I am an <img class=""eo"" src=""/img/eo/1F47D.svg"" alt="":alien:""/>";
-            actual = Emojione.ImageToShortname(html);
-            expected = "I am an :alien:";
-            Assert.AreEqual(expected, actual);
-
-            html = @"I am an <img class=""eo"" src=""/img/eo/1F47D.svg"" alt=""👽"">";
-            actual = Emojione.ImageToShortname(html);
-            expected = "I am an :alien:";
-            Assert.AreEqual(expected, actual);
-
-            html = @"We are <img class=""eo"" src=""/img/eo/1F468-1F469-1F466-1F466.svg"" alt=""👨👩👦👦"">";
-            actual = Emojione.ImageToShortname(html);
-            expected = "We are :family_mwbb:";
-
-            html = @"We are <img class=""eo"" src=""/img/eo/1F468-1F469-1F466-1F466.svg"" alt="":family_mwbb:"">";
-            actual = Emojione.ImageToShortname(html);
-            expected = "We are :family_mwbb:";
-            Assert.AreEqual(expected, actual);
-        }
-
+        
         [TestMethod]
         public void CodePointToUnicode() {
             // U+1D161 = MUSICAL SYMBOL SIXTEENTH NOTE 
