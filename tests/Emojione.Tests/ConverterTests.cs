@@ -10,67 +10,67 @@ namespace Emojione.Tests {
             // single smiley
             string text = ":D";
             string expected = "😃";
-            string actual = EmojiHelper.AsciiToUnicode(text);
+            string actual = Emojione.AsciiToUnicode(text);
             Assert.AreEqual(expected, actual);
 
             // single smiley with incorrect case (shouldn't convert)
             text = ":d";
             expected = text;
-            actual = EmojiHelper.AsciiToUnicode(text);
+            actual = Emojione.AsciiToUnicode(text);
             Assert.AreEqual(expected, actual);
 
             // multiple smileys
             text = ";) :p :*";
             expected = "😉 😛 😘";
-            actual = EmojiHelper.AsciiToUnicode(text);
+            actual = Emojione.AsciiToUnicode(text);
             Assert.AreEqual(expected, actual);
 
             // smiley to start a sentence
             text = @":\ is our confused smiley.";
             expected = "😕 is our confused smiley.";
-            actual = EmojiHelper.AsciiToUnicode(text);
+            actual = Emojione.AsciiToUnicode(text);
             Assert.AreEqual(expected, actual);
 
             // smiley to end a sentence
             text = "Our smiley to represent joy is :')";
             expected = "Our smiley to represent joy is 😂";
-            actual = EmojiHelper.AsciiToUnicode(text);
+            actual = Emojione.AsciiToUnicode(text);
             Assert.AreEqual(expected, actual);
 
             // smiley to end a sentence with puncuation
             text = "The reverse to the joy smiley is the cry smiley :'(.";
             expected = "The reverse to the joy smiley is the cry smiley 😢.";
-            actual = EmojiHelper.AsciiToUnicode(text);
+            actual = Emojione.AsciiToUnicode(text);
             Assert.AreEqual(expected, actual);
 
             // smiley to end a sentence with preceeding punctuation
             text = @"This is the ""flushed"" smiley: :$.";
             expected = @"This is the ""flushed"" smiley: 😳.";
-            actual = EmojiHelper.AsciiToUnicode(text);
+            actual = Emojione.AsciiToUnicode(text);
             Assert.AreEqual(expected, actual);
 
             // smiley inside of an IMG tag (shouldn't convert anything inside of the tag)
             text = @"Smile <img class=""e0"" src=""/eo/img/1F604.svg"" alt="":)"" /> because it's going to be a good day.";
             expected = text;
-            actual = EmojiHelper.AsciiToUnicode(text);
+            actual = Emojione.AsciiToUnicode(text);
             Assert.AreEqual(expected, actual);
 
             // smiley inside of OBJECT tag  (shouldn't convert anything inside of the tag)
             text = @"Smile <object class=""emojione"" data=""//cdn.jsdelivr.net/emojione/assets/svg/1F604.svg"" type=""image/svg+xml"" standby="":)"">:)</object> because it's going to be a good day.";
             expected = text;
-            actual = EmojiHelper.AsciiToUnicode(text);
+            actual = Emojione.AsciiToUnicode(text);
             Assert.AreEqual(expected, actual);
 
             // typical username password fail  (shouldn't convert the user:pass, but should convert the last :P)
             text = @"Please log-in with user:pass as your credentials :P.";
             expected = @"Please log-in with user:pass as your credentials 😛.";
-            actual = EmojiHelper.AsciiToUnicode(text);
+            actual = Emojione.AsciiToUnicode(text);
             Assert.AreEqual(expected, actual);
 
             // shouldn't replace an ascii smiley in a URL (shouldn't replace :/)
             text = @"Check out http://www.emojione.com";
             expected = text;
-            actual = EmojiHelper.AsciiToUnicode(text);
+            actual = Emojione.AsciiToUnicode(text);
             Assert.AreEqual(expected, actual);
         }
 
@@ -79,61 +79,61 @@ namespace Emojione.Tests {
             // single shortname
             string text = ":snail:";
             string expected = "🐌";
-            string actual = EmojiHelper.ShortnameToUnicode(text);
+            string actual = Emojione.ShortnameToUnicode(text);
             Assert.AreEqual(expected, actual);
 
             // shortname mid sentence
             text = "The :snail: is Emoji One's official mascot.";
             expected = "The 🐌 is Emoji One's official mascot.";
-            actual = EmojiHelper.ShortnameToUnicode(text);
+            actual = Emojione.ShortnameToUnicode(text);
             Assert.AreEqual(expected, actual);
 
             // shortname at start of sentence
             text = ":snail: mail.";
             expected = "🐌 mail.";
-            actual = EmojiHelper.ShortnameToUnicode(text);
+            actual = Emojione.ShortnameToUnicode(text);
             Assert.AreEqual(expected, actual);
 
             // shortname at start of sentence with apostrophe
             text = ":snail:'s are cool!";
             expected = "🐌's are cool!";
-            actual = EmojiHelper.ShortnameToUnicode(text);
+            actual = Emojione.ShortnameToUnicode(text);
             Assert.AreEqual(expected, actual);
 
             // shortname at end of sentence
             text = "Emoji One's official mascot is :snail:.";
             expected = "Emoji One's official mascot is 🐌.";
-            actual = EmojiHelper.ShortnameToUnicode(text);
+            actual = Emojione.ShortnameToUnicode(text);
             Assert.AreEqual(expected, actual);
 
             // shortname at end of sentence with alternate puncuation
             text = "Emoji One's official mascot is :snail:!";
             expected = "Emoji One's official mascot is 🐌!";
-            actual = EmojiHelper.ShortnameToUnicode(text);
+            actual = Emojione.ShortnameToUnicode(text);
             Assert.AreEqual(expected, actual);
 
             // shortname at end of sentence with preceeding colon
             text = "Emoji One's official mascot: :snail:";
             expected = "Emoji One's official mascot: 🐌";
-            actual = EmojiHelper.ShortnameToUnicode(text);
+            actual = Emojione.ShortnameToUnicode(text);
             Assert.AreEqual(expected, actual);
 
             // shortname inside of IMG tag
             text = @"The <img class=""eo"" src=""/img/eo/1F40C.svg"" alt="":snail:"" /> is Emoji One's official mascot.";
             expected = text;
-            actual = EmojiHelper.ShortnameToUnicode(text);
+            actual = Emojione.ShortnameToUnicode(text);
             Assert.AreEqual(expected, actual);
 
             // shortname inside of OBJECT tag
             text = @"The <object class=""emojione"" data=""//cdn.jsdelivr.net/emojione/assets/svg/1F40C.svg"" type=""image/svg+xml"" standby="":snail:"">:snail:</object> is Emoji One's official mascot.";
             expected = text;
-            actual = EmojiHelper.ShortnameToUnicode(text);
+            actual = Emojione.ShortnameToUnicode(text);
             Assert.AreEqual(expected, actual);
 
             // shortname to unicode with code pairs
             text = ":nine:";
             expected = "9⃣";
-            actual = EmojiHelper.ShortnameToUnicode(text);
+            actual = Emojione.ShortnameToUnicode(text);
             Assert.AreEqual(expected, actual);
         }
 
@@ -142,19 +142,19 @@ namespace Emojione.Tests {
             // single unicode character conversion
             string text = "🐌";
             string expected = ":snail:";
-            string actual = EmojiHelper.UnicodeToShortname(text);
+            string actual = Emojione.UnicodeToShortname(text);
             Assert.AreEqual(expected, actual);
 
             // mixed ascii, regular unicode and duplicate emoji
             text = "👽 is not :alien: and 저 is not 👽 or 👽";
             expected = ":alien: is not :alien: and 저 is not :alien: or :alien:";
-            actual = EmojiHelper.UnicodeToShortname(text);
+            actual = Emojione.UnicodeToShortname(text);
             Assert.AreEqual(expected, actual);
 
             // multiline emoji string
             text = "💃\n💃";
             expected = ":dancer:\n:dancer:";
-            actual = EmojiHelper.UnicodeToShortname(text);
+            actual = Emojione.UnicodeToShortname(text);
             Assert.AreEqual(expected, actual);
 
             // all emoji
@@ -166,67 +166,67 @@ namespace Emojione.Tests {
             // single character with surrogate pair
             text = "9⃣";
             expected = ":nine:";
-            actual = EmojiHelper.UnicodeToShortname(text);
+            actual = Emojione.UnicodeToShortname(text);
             Assert.AreEqual(expected, actual);
 
             // character mid sentence
             text = "The 🐌 is Emoji One's official mascot.";
             expected = "The :snail: is Emoji One's official mascot.";
-            actual = EmojiHelper.UnicodeToShortname(text);
+            actual = Emojione.UnicodeToShortname(text);
             Assert.AreEqual(expected, actual);
 
             // character mid sentence with a comma
             text = "The 🐌, is Emoji One's official mascot.";
             expected = "The :snail:, is Emoji One's official mascot.";
-            actual = EmojiHelper.UnicodeToShortname(text);
+            actual = Emojione.UnicodeToShortname(text);
             Assert.AreEqual(expected, actual);
 
             // character at start of sentence
             text = "🐌 mail.";
             expected = ":snail: mail.";
-            actual = EmojiHelper.UnicodeToShortname(text);
+            actual = Emojione.UnicodeToShortname(text);
             Assert.AreEqual(expected, actual);
 
             // character at start of sentence with apostrophe
             text = "🐌's are cool!";
             expected = ":snail:'s are cool!";
-            actual = EmojiHelper.UnicodeToShortname(text);
+            actual = Emojione.UnicodeToShortname(text);
             Assert.AreEqual(expected, actual);
 
             // character at end of sentence
             text = "Emoji One's official mascot is 🐌.";
             expected = "Emoji One's official mascot is :snail:.";
-            actual = EmojiHelper.UnicodeToShortname(text);
+            actual = Emojione.UnicodeToShortname(text);
             Assert.AreEqual(expected, actual);
 
             // character at end of sentence with alternate puncuation
             text = "Emoji One's official mascot is 🐌!";
             expected = "Emoji One's official mascot is :snail:!";
-            actual = EmojiHelper.UnicodeToShortname(text);
+            actual = Emojione.UnicodeToShortname(text);
             Assert.AreEqual(expected, actual);
 
             // character at end of sentence with preceeding colon
             text = "Emoji One's official mascot: 🐌";
             expected = "Emoji One's official mascot: :snail:";
-            actual = EmojiHelper.UnicodeToShortname(text);
+            actual = Emojione.UnicodeToShortname(text);
             Assert.AreEqual(expected, actual);
 
             // character inside of IMG tag
             text = @"The <img class=""eo"" src=""/img/eo/1F40C.svg"" alt=""🐌"" /> is Emoji One's official mascot.";
             expected = text;
-            actual = EmojiHelper.UnicodeToShortname(text);
+            actual = Emojione.UnicodeToShortname(text);
             Assert.AreEqual(expected, actual);
 
             // characters inside of OBJECT tag
             text = @"The <object class=""emojione"" data=""//cdn.jsdelivr.net/emojione/assets/svg/1F40C.svg"" type=""image/svg+xml"" standby=""🐌"">🐌</object> is Emoji One's official mascot.";
             expected = text;
-            actual = EmojiHelper.UnicodeToShortname(text);
+            actual = Emojione.UnicodeToShortname(text);
             Assert.AreEqual(expected, actual);
 
             // unicode alternate to short
             text = "#️⃣"; // 0023-fe0f-20e3
             expected = ":hash:";
-            actual = EmojiHelper.UnicodeToShortname(text);
+            actual = Emojione.UnicodeToShortname(text);
             Assert.AreEqual(expected, actual);
         }
 
@@ -235,25 +235,25 @@ namespace Emojione.Tests {
             // single unicode character conversion
             string text = ":snail:";
             string expected = "🐌";
-            string actual = EmojiHelper.UnifyUnicode(text);
+            string actual = Emojione.UnifyUnicode(text);
             Assert.AreEqual(expected, actual);
 
             // mixed ascii, regular unicode and duplicate emoji
             text = ":alien: is 👽 and 저 is not :alien: or :alien: also :randomy: is not emoji";
             expected = "👽 is 👽 and 저 is not 👽 or 👽 also :randomy: is not emoji";
-            actual = EmojiHelper.UnifyUnicode(text);
+            actual = Emojione.UnifyUnicode(text);
             Assert.AreEqual(expected, actual);
 
             // multiline emoji string
             text = ":dancer:\n:dancer:";
             expected = "💃\n💃";
-            actual = EmojiHelper.UnifyUnicode(text);
+            actual = Emojione.UnifyUnicode(text);
             Assert.AreEqual(expected, actual);
 
             // triple emoji string
             text = ":dancer::dancer::alien:";
             expected = "💃💃👽";
-            actual = EmojiHelper.UnifyUnicode(text);
+            actual = Emojione.UnifyUnicode(text);
             Assert.AreEqual(expected, actual);
         }
 
@@ -262,25 +262,25 @@ namespace Emojione.Tests {
             // single character shortname conversion
             string text = ":snail:";
             string expected = @"<img class=""eo"" src=""/img/eo/1F40C.svg"" alt="":snail:"" />";
-            string actual = EmojiHelper.ToImage(text);
+            string actual = Emojione.ToImage(text);
             Assert.AreEqual(expected, actual);
 
             // shortname shares a colon
             text = ":invalid:snail:";
             expected = ":invalid:snail:";
-            actual = EmojiHelper.ToImage(text);
+            actual = Emojione.ToImage(text);
             Assert.AreEqual(expected, actual);
 
             // single unicode character conversion
             text = "🐌";
             expected = @"<img class=""eo"" src=""/img/eo/1F40C.svg"" alt="":snail:"" />";
-            actual = EmojiHelper.ToImage(text);
+            actual = Emojione.ToImage(text);
             Assert.AreEqual(expected, actual);
 
             // mixed ascii, regular unicode and duplicate emoji
             text = ":alien: is 👽 and 저 is not :alien: or :alien: also :randomy: is not emoji";
             expected = @"<img class=""eo"" src=""/img/eo/1F47D.svg"" alt="":alien:"" /> is <img class=""eo"" src=""/img/eo/1F47D.svg"" alt="":alien:"" /> and 저 is not <img class=""eo"" src=""/img/eo/1F47D.svg"" alt="":alien:"" /> or <img class=""eo"" src=""/img/eo/1F47D.svg"" alt="":alien:"" /> also :randomy: is not emoji";
-            actual = EmojiHelper.ToImage(text);
+            actual = Emojione.ToImage(text);
             Assert.AreEqual(expected, actual);
         }
 
@@ -288,7 +288,7 @@ namespace Emojione.Tests {
         public void UnicodeToCodepoint() {
             string unicode = "😀"; // :grinning:
             string expected = "1f600";
-            string actual = EmojiHelper.ToCodePoint(unicode);
+            string actual = Emojione.ToCodePoint(unicode);
             Assert.AreEqual(expected, actual);
 
             expected = "D83D-DE00";
@@ -297,7 +297,7 @@ namespace Emojione.Tests {
 
             string codepoint = "1f600";
             expected = "😀";
-            actual = EmojiHelper.ToUnicode(codepoint);
+            actual = Emojione.ToUnicode(codepoint);
             Assert.AreEqual(expected, actual);
             expected = "D83D-DE00";
             actual = ShowX4(actual);
@@ -315,36 +315,36 @@ namespace Emojione.Tests {
         [TestMethod]
         public void ImageToShortname() {
             string html = @"I am an <i class=""eo eo-1F47D"" title="":alien:"">👽</i>";
-            string actual = EmojiHelper.ImageToShortname(html);
+            string actual = Emojione.ImageToShortname(html);
             string expected = "I am an :alien:";
             Assert.AreEqual(expected, actual);
 
             html = @"I am an <i class=""eo eo-alien"">:alien:</i>";
-            actual = EmojiHelper.ImageToShortname(html);
+            actual = Emojione.ImageToShortname(html);
             expected = "I am an :alien:";
             Assert.AreEqual(expected, actual);
 
             html = @"I am an <img class=""eo"" src=""/img/eo/1F47D.svg"" alt="":alien:"" />";
-            actual = EmojiHelper.ImageToShortname(html);
+            actual = Emojione.ImageToShortname(html);
             expected = "I am an :alien:";
             Assert.AreEqual(expected, actual);
 
             html = @"I am an <img class=""eo"" src=""/img/eo/1F47D.svg"" alt="":alien:""/>";
-            actual = EmojiHelper.ImageToShortname(html);
+            actual = Emojione.ImageToShortname(html);
             expected = "I am an :alien:";
             Assert.AreEqual(expected, actual);
 
             html = @"I am an <img class=""eo"" src=""/img/eo/1F47D.svg"" alt=""👽"">";
-            actual = EmojiHelper.ImageToShortname(html);
+            actual = Emojione.ImageToShortname(html);
             expected = "I am an :alien:";
             Assert.AreEqual(expected, actual);
 
             html = @"We are <img class=""eo"" src=""/img/eo/1F468-1F469-1F466-1F466.svg"" alt=""👨👩👦👦"">";
-            actual = EmojiHelper.ImageToShortname(html);
+            actual = Emojione.ImageToShortname(html);
             expected = "We are :family_mwbb:";
 
             html = @"We are <img class=""eo"" src=""/img/eo/1F468-1F469-1F466-1F466.svg"" alt="":family_mwbb:"">";
-            actual = EmojiHelper.ImageToShortname(html);
+            actual = Emojione.ImageToShortname(html);
             expected = "We are :family_mwbb:";
             Assert.AreEqual(expected, actual);
         }
@@ -369,7 +369,7 @@ namespace Emojione.Tests {
 
             string ninestr = "9⃣";
             string expected = "0039-20e3";
-            string actual = EmojiHelper.ToCodePoint(ninestr); // 0039-20e3
+            string actual = Emojione.ToCodePoint(ninestr); // 0039-20e3
             Assert.AreEqual(expected, actual);
 
             var s = actual.Split('-');
@@ -406,7 +406,7 @@ namespace Emojione.Tests {
         /// <param name="unicode"></param>
         /// <returns></returns>
         private static string ToSurrogateString(string codepoint) {
-            string unicode = EmojiHelper.ToUnicode(codepoint);
+            string unicode = Emojione.ToUnicode(codepoint);
             string s2 = "";
             for (int x = 0; x < unicode.Length; x++) {
                 s2 += string.Format("\\u{0:X4}", (int)unicode[x]);

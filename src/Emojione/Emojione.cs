@@ -11,7 +11,7 @@ namespace Emojione {
     /// <summary>
     /// 
     /// </summary>
-    public static class EmojiHelper {
+    public static class Emojione {
 
         //private static bool _ascii = false; // convert ascii smileys
         private static string _image_path = "/img/eo/"; // path to emoji images (without leading slash)
