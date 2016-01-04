@@ -57,8 +57,7 @@ namespace Codegen {
                 using (StreamWriter sw = new StreamWriter(Path.Combine(OutputDir, "Emoji.cs"), false, Encoding.UTF8)) {
 
                     var asciis = emojis.Values.Where(x => x.Asciis.Any());
-
-                    sw.Write(@"        private const string ASCII_PATTERN = @""(\s|^)(");
+                    sw.Write(@"        private const string ASCII_PATTERN = @""(?<=\s|^)(");
                     for (int i = 0; i < asciis.Count(); i++) {
                         var emoji = asciis.ElementAt(i);
                         for (int j = 0; j < emoji.Asciis.Count; j++) {
