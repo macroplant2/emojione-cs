@@ -79,37 +79,37 @@ namespace Emojione.Tests {
         public void ShortnameToImage() {
             // shortname to image
             string text = "Hello world! 😄 :smile:";
-            string expected = @"Hello world! 😄 <img class=""emojione"" alt=""😄"" src=""//cdn.jsdelivr.net/emojione/assets/png/1f604.png?v=1.2.4""/>";
+            string expected = @"Hello world! 😄 <img class=""emojione"" alt=""😄"" src=""//cdn.jsdelivr.net/emojione/assets/png/1f604.png?v=1.2.4"" />";
             string actual = Emojione.ShortnameToImage(text);
             Assert.AreEqual(expected, actual);
 
             // shortname at start of sentence with apostrophe
             text = ":snail:'s are cool!";
-            expected = @"<img class=""emojione"" alt=""🐌"" src=""//cdn.jsdelivr.net/emojione/assets/png/1f40c.png?v=1.2.4""/>'s are cool!";
+            expected = @"<img class=""emojione"" alt=""🐌"" src=""//cdn.jsdelivr.net/emojione/assets/png/1f40c.png?v=1.2.4"" />'s are cool!";
             actual = Emojione.ShortnameToImage(text);
             Assert.AreEqual(expected, actual);
 
             // shortname shares a colon
             text = ":invalid:snail:";
-            expected = @":invalid<img class=""emojione"" alt=""🐌"" src=""//cdn.jsdelivr.net/emojione/assets/png/1f40c.png?v=1.2.4""/>";
+            expected = @":invalid<img class=""emojione"" alt=""🐌"" src=""//cdn.jsdelivr.net/emojione/assets/png/1f40c.png?v=1.2.4"" />";
             actual = Emojione.ShortnameToImage(text);
             Assert.AreEqual(expected, actual);
 
             // mixed ascii, regular unicode and duplicate emoji
             text = ":alien: is 👽 and 저 is not :alien: or :alien: also :randomy: is not emoji";
-            expected = @"<img class=""emojione"" alt=""👽"" src=""//cdn.jsdelivr.net/emojione/assets/png/1f47d.png?v=1.2.4""/> is 👽 and 저 is not <img class=""emojione"" alt=""👽"" src=""//cdn.jsdelivr.net/emojione/assets/png/1f47d.png?v=1.2.4""/> or <img class=""emojione"" alt=""👽"" src=""//cdn.jsdelivr.net/emojione/assets/png/1f47d.png?v=1.2.4""/> also :randomy: is not emoji";
+            expected = @"<img class=""emojione"" alt=""👽"" src=""//cdn.jsdelivr.net/emojione/assets/png/1f47d.png?v=1.2.4"" /> is 👽 and 저 is not <img class=""emojione"" alt=""👽"" src=""//cdn.jsdelivr.net/emojione/assets/png/1f47d.png?v=1.2.4"" /> or <img class=""emojione"" alt=""👽"" src=""//cdn.jsdelivr.net/emojione/assets/png/1f47d.png?v=1.2.4"" /> also :randomy: is not emoji";
             actual = Emojione.ShortnameToImage(text);
             Assert.AreEqual(expected, actual);
 
             // multiline emoji string
             text = ":dancer:\n:dancer:";
-            expected = @"<img class=""emojione"" alt=""💃"" src=""//cdn.jsdelivr.net/emojione/assets/png/1f483.png?v=1.2.4""/>\\n<img class=""emojione"" alt=""💃"" src=""//cdn.jsdelivr.net/emojione/assets/png/1f483.png?v=1.2.4""/>";
+            expected = @"<img class=""emojione"" alt=""💃"" src=""//cdn.jsdelivr.net/emojione/assets/png/1f483.png?v=1.2.4"" />\\n<img class=""emojione"" alt=""💃"" src=""//cdn.jsdelivr.net/emojione/assets/png/1f483.png?v=1.2.4"" />";
             actual = Emojione.ShortnameToImage(text);
             Assert.AreEqual(expected, actual);
 
             // triple emoji string
             text = ":dancer::dancer::alien:";
-            expected = @"<img class=""emojione"" alt=""💃"" src=""//cdn.jsdelivr.net/emojione/assets/png/1f483.png?v=1.2.4""/><img class=""emojione"" alt=""💃"" src=""//cdn.jsdelivr.net/emojione/assets/png/1f483.png?v=1.2.4""/><img class=""emojione"" alt=""👽"" src=""//cdn.jsdelivr.net/emojione/assets/png/1f47d.png?v=1.2.4""/>";
+            expected = @"<img class=""emojione"" alt=""💃"" src=""//cdn.jsdelivr.net/emojione/assets/png/1f483.png?v=1.2.4"" /><img class=""emojione"" alt=""💃"" src=""//cdn.jsdelivr.net/emojione/assets/png/1f483.png?v=1.2.4"" /><img class=""emojione"" alt=""👽"" src=""//cdn.jsdelivr.net/emojione/assets/png/1f47d.png?v=1.2.4"" />";
             actual = Emojione.ShortnameToImage(text);
             Assert.AreEqual(expected, actual);
         }
