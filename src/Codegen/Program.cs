@@ -13,16 +13,14 @@ namespace Codegen {
         /// <summary>
         /// Path to the emoji.json file.
         /// </summary>
-        public string EmojiFile { get; set; } = "emoji.json";
+        public string EmojiFile { get; set; } = "../../../../emoji.json";
 
-        public string OutputDir { get; set; } = "../../../";
+        public string SourceDir { get; set; } = "../../../Emojione";
+
+        public string WebDir { get; set; } = "../../../../bin";
 
         public static void Main(string[] args) {
             var program = new Program();
-            if (args.Length == 1) {
-                program.EmojiFile = args[0];
-            }
-            program.OutputDir = Environment.CurrentDirectory;
             program.Execute();
         }
 
@@ -37,7 +35,8 @@ namespace Codegen {
                 var emojis = JsonConvert.DeserializeObject<Dictionary<string, Emoji>>(json);
 
                 // write regex patternas and dictionaries to partial class
-                using (StreamWriter sw = new StreamWriter(Path.Combine(OutputDir, "Emojione.generated.cs"), false, Encoding.UTF8)) {
+                Directory.CreateDirectory(SourceDir);
+                using (StreamWriter sw = new StreamWriter(Path.Combine(SourceDir, "Emojione.generated.cs"), false, Encoding.UTF8)) {
                     sw.WriteLine(@"using System.Collections.Generic;");
                     sw.WriteLine();
                     sw.WriteLine(@"namespace Emojione {");
@@ -146,12 +145,13 @@ namespace Codegen {
                     }
                     sw.WriteLine();
                     sw.WriteLine(@"        };");
-                    sw.WriteLine(@"    };");
+                    sw.WriteLine(@"    }");
                     sw.WriteLine(@"}");
                 }
 
                 // write css
-                using (StreamWriter sw = new StreamWriter(Path.Combine(OutputDir, "emojione.css"), false, Encoding.UTF8)) {
+                Directory.CreateDirectory(WebDir);
+                using (StreamWriter sw = new StreamWriter(Path.Combine(WebDir, "emojione.css"), false, Encoding.UTF8)) {
                     foreach (var emoji in emojis) {
                         sw.WriteLine(@".e1a-{0} {{
     background-image: url(""//cdn.jsdelivr.net/emojione/assets/svg/{1}.svg"");
@@ -165,7 +165,7 @@ namespace Codegen {
                     categories.Add(emoji.Category);
                 }
 
-                using (StreamWriter sw = new StreamWriter(Path.Combine(OutputDir, "emojione.js"), false, Encoding.UTF8)) {
+                using (StreamWriter sw = new StreamWriter(Path.Combine(WebDir, "emojione.js"), false, Encoding.UTF8)) {
 
                     sw.WriteLine("    var categories = [");
                     for (int i = 0; i < categories.Count; i++) {
