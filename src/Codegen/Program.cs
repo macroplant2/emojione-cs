@@ -15,7 +15,7 @@ namespace Codegen {
         /// </summary>
         public string EmojiFile { get; set; } = "emoji.json";
 
-        public string OutputDir { get; set; }
+        public string OutputDir { get; set; } = "../../../";
 
         public static void Main(string[] args) {
             var program = new Program();
@@ -32,30 +32,18 @@ namespace Codegen {
         /// <returns></returns>
         public bool Execute() {
             try {
-                // load emoji.json
+                // load and parse emoji.json
                 string json = File.ReadAllText(EmojiFile);
-
-                // parse it
                 var emojis = JsonConvert.DeserializeObject<Dictionary<string, Emoji>>(json);
 
-                // get categories
-                var categories = new HashSet<string>();
-                foreach (var emoji in emojis.Values) {
-                    categories.Add(emoji.Category);
-                }
-
-                // write css
-                using (StreamWriter sw = new StreamWriter(Path.Combine(OutputDir, "emoji.css"), false, Encoding.UTF8)) {
-                    foreach (var emoji in emojis) {
-                        sw.WriteLine(@".e1-{0} {{
-    background-image: url(""../img/e1/{1}.svg"");
-}}", emoji.Value.Shortname.Replace("_", "-").Replace(":", ""), emoji.Value.Unicode.ToUpper());
-                    }
-                }
-
-                // write dictionaries
-                using (StreamWriter sw = new StreamWriter(Path.Combine(OutputDir, "Emoji.cs"), false, Encoding.UTF8)) {
-
+                // write regex patternas and dictionaries to partial class
+                using (StreamWriter sw = new StreamWriter(Path.Combine(OutputDir, "Emojione.generated.cs"), false, Encoding.UTF8)) {
+                    sw.WriteLine(@"using System.Collections.Generic;");
+                    sw.WriteLine();
+                    sw.WriteLine(@"namespace Emojione {");
+                    sw.WriteLine();
+                    sw.WriteLine(@"    public static partial class Emojione {");
+                    sw.WriteLine();
                     var asciis = emojis.Values.Where(x => x.Asciis.Any());
                     sw.Write(@"        private const string ASCII_PATTERN = @""(?<=\s|^)(");
                     for (int i = 0; i < asciis.Count(); i++) {
@@ -72,7 +60,8 @@ namespace Codegen {
                     }
                     sw.WriteLine(@")(?=\s|$|[!,\.])"";");
                     sw.WriteLine();
-
+                    sw.WriteLine(@"        private const string IGNORE_PATTERN = @""<object[^>]*>.*?</object>|<span[^>]*>.*?</span>|<i[^>]*>.*?</i>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>"";");
+                    sw.WriteLine();
                     sw.Write(@"        private const string SHORTNAME_PATTERN = @""(");
                     for (int i = 0; i < emojis.Count; i++) {
                         var emoji = emojis.ElementAt(i).Value;
@@ -87,7 +76,6 @@ namespace Codegen {
                     }
                     sw.WriteLine(@")"";");
                     sw.WriteLine();
-
                     sw.Write(@"        private const string UNICODE_PATTERN = @""(");
                     for (int i = 0; i < emojis.Count; i++) {
                         var emoji = emojis.ElementAt(i).Value;
@@ -102,12 +90,11 @@ namespace Codegen {
                     }
                     sw.WriteLine(@")"";");
                     sw.WriteLine();
-
-                    sw.WriteLine(@"        private static readonly Dictionary<string, string> _ascii_to_codepoint = new Dictionary<string, string> {");
+                    sw.WriteLine(@"        private static readonly Dictionary<string, string> ASCII_TO_CODEPOINT = new Dictionary<string, string> {");
                     for (int i = 0; i < asciis.Count(); i++) {
                         var emoji = asciis.ElementAt(i);
                         for (int j = 0; j < emoji.Asciis.Count; j++) {
-                            sw.Write(@"            {{""{0}"", ""{1}""}}", emoji.Asciis[j].Replace("\\", "\\\\"), emoji.Unicode.ToLower());
+                            sw.Write(@"            [""{0}""] = ""{1}""", emoji.Asciis[j].Replace("\\", "\\\\"), emoji.Unicode.ToLower());
                             if (j < emoji.Asciis.Count - 1) {
                                 sw.WriteLine(",");
                             }
@@ -119,29 +106,24 @@ namespace Codegen {
                     sw.WriteLine();
                     sw.WriteLine(@"        };");
                     sw.WriteLine();
-
-                    sw.WriteLine(@"        private static readonly Dictionary<string, string> _shortname_to_codepoint = new Dictionary<string, string> {");
-                    for (int i = 0; i < emojis.Count; i++) {
-                        var emoji = emojis.ElementAt(i).Value;
-                        sw.Write(@"            {{""{0}"", ""{1}""}}", emoji.Shortname, emoji.Unicode.ToLower());
-                        for (int j = 0; j < emoji.Aliases.Count; j++) {
-                            sw.WriteLine(",");
-                            sw.Write(@"            {{""{0}"", ""{1}""}}", emoji.Aliases[j], emoji.Unicode.ToLower());
-                        }
-                        if (i < emojis.Count - 1) {
+                    sw.WriteLine(@"        private static readonly Dictionary<string, string> CODEPOINT_TO_ASCII = new Dictionary<string, string> {");
+                    for (int i = 0; i < asciis.Count(); i++) {
+                        var emoji = asciis.ElementAt(i);
+                        sw.Write(@"            [""{0}""] = ""{1}""", emoji.Unicode.ToLower(), emoji.Asciis.First().Replace("\\", "\\\\"));
+                        if (i < asciis.Count() - 1) {
                             sw.WriteLine(",");
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine(@"        };");
                     sw.WriteLine();
-                    sw.WriteLine(@"        private static readonly Dictionary<string, string> _codepoint_to_shortname = new Dictionary<string, string> {");
+                    sw.WriteLine(@"        private static readonly Dictionary<string, string> CODEPOINT_TO_SHORTNAME = new Dictionary<string, string> {");
                     for (int i = 0; i < emojis.Count; i++) {
                         var emoji = emojis.ElementAt(i).Value;
-                        sw.Write(@"            {{""{0}"", ""{1}""}}", emoji.Unicode.ToLower(), emoji.Shortname);
+                        sw.Write(@"            [""{0}""] = ""{1}""", emoji.Unicode.ToLower(), emoji.Shortname);
                         if (!string.IsNullOrEmpty(emoji.Alternates)) {
                             sw.WriteLine(",");
-                            sw.Write(@"            {{""{0}"", ""{1}""}}", emoji.Alternates.ToLower(), emoji.Shortname);
+                            sw.Write(@"            [""{0}""] = ""{1}""", emoji.Alternates.ToLower(), emoji.Shortname);
                         }
                         if (i < emojis.Count - 1) {
                             sw.WriteLine(",");
@@ -149,9 +131,41 @@ namespace Codegen {
                     }
                     sw.WriteLine();
                     sw.WriteLine(@"        };");
+                    sw.WriteLine();
+                    sw.WriteLine(@"        private static readonly Dictionary<string, string> SHORTNAME_TO_CODEPOINT = new Dictionary<string, string> {");
+                    for (int i = 0; i < emojis.Count; i++) {
+                        var emoji = emojis.ElementAt(i).Value;
+                        sw.Write(@"            [""{0}""] = ""{1}""", emoji.Shortname, emoji.Unicode.ToLower());
+                        for (int j = 0; j < emoji.Aliases.Count; j++) {
+                            sw.WriteLine(",");
+                            sw.Write(@"            [""{0}""] = ""{1}""", emoji.Aliases[j], emoji.Unicode.ToLower());
+                        }
+                        if (i < emojis.Count - 1) {
+                            sw.WriteLine(",");
+                        }
+                    }
+                    sw.WriteLine();
+                    sw.WriteLine(@"        };");
+                    sw.WriteLine(@"    };");
+                    sw.WriteLine(@"}");
                 }
 
-                using (StreamWriter sw = new StreamWriter(Path.Combine(OutputDir, "emoji.js"), false, Encoding.UTF8)) {
+                // write css
+                using (StreamWriter sw = new StreamWriter(Path.Combine(OutputDir, "emojione.css"), false, Encoding.UTF8)) {
+                    foreach (var emoji in emojis) {
+                        sw.WriteLine(@".e1a-{0} {{
+    background-image: url(""//cdn.jsdelivr.net/emojione/assets/svg/{1}.svg"");
+}}", emoji.Value.Shortname.Replace("_", "-").Replace(":", ""), emoji.Value.Unicode);
+                    }
+                }
+
+                // get categories
+                var categories = new HashSet<string>();
+                foreach (var emoji in emojis.Values) {
+                    categories.Add(emoji.Category);
+                }
+
+                using (StreamWriter sw = new StreamWriter(Path.Combine(OutputDir, "emojione.js"), false, Encoding.UTF8)) {
 
                     sw.WriteLine("    var categories = [");
                     for (int i = 0; i < categories.Count; i++) {
