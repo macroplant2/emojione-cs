@@ -73,6 +73,21 @@ namespace Codegen {
                     sw.WriteLine(@")(?=\s|$|[!,\.])"";");
                     sw.WriteLine();
 
+                    sw.Write(@"        private const string SHORTNAME_PATTERN = @""(");
+                    for (int i = 0; i < emojis.Count; i++) {
+                        var emoji = emojis.ElementAt(i).Value;
+                        if (i > 0) {
+                            sw.Write("|");
+                        }
+                        sw.Write(Regex.Escape(emoji.Shortname));
+                        for (int j = 0; j < emoji.Aliases.Count; j++) {
+                            sw.Write("|");
+                            sw.Write(Regex.Escape(emoji.Aliases[j]));
+                        }
+                    }
+                    sw.WriteLine(@")"";");
+                    sw.WriteLine();
+
                     sw.Write(@"        private const string UNICODE_PATTERN = @""(");
                     for (int i = 0; i < emojis.Count; i++) {
                         var emoji = emojis.ElementAt(i).Value;
@@ -81,15 +96,6 @@ namespace Codegen {
                             sw.Write("|");
                             sw.Write(ToSurrogateString(emoji.Alternates));
                         }
-                        //if (emoji.Alternates.Any()) {
-                        //    sw.Write("|");
-                        //    for (int j = 0; j < emoji.Alternates.Count; j++) {
-                        //        sw.Write(ToSurrogateString(emoji.Alternates[j]));
-                        //        if (j < emoji.Alternates.Count - 1) {
-                        //            sw.Write("|");
-                        //        }
-                        //    }
-                        //}
                         if (i < emojis.Count - 1) {
                             sw.Write("|");
                         }
@@ -114,11 +120,14 @@ namespace Codegen {
                     sw.WriteLine(@"        };");
                     sw.WriteLine();
 
-
                     sw.WriteLine(@"        private static readonly Dictionary<string, string> _shortname_to_codepoint = new Dictionary<string, string> {");
                     for (int i = 0; i < emojis.Count; i++) {
                         var emoji = emojis.ElementAt(i).Value;
                         sw.Write(@"            {{""{0}"", ""{1}""}}", emoji.Shortname, emoji.Unicode.ToLower());
+                        for (int j = 0; j < emoji.Aliases.Count; j++) {
+                            sw.WriteLine(",");
+                            sw.Write(@"            {{""{0}"", ""{1}""}}", emoji.Aliases[j], emoji.Unicode.ToLower());
+                        }
                         if (i < emojis.Count - 1) {
                             sw.WriteLine(",");
                         }
@@ -134,14 +143,6 @@ namespace Codegen {
                             sw.WriteLine(",");
                             sw.Write(@"            {{""{0}"", ""{1}""}}", emoji.Alternates.ToLower(), emoji.Shortname);
                         }
-                        //    sw.WriteLine(",");
-                        //    for (int j = 0; j < emoji.Alternates.Count; j++) {
-                        //        sw.Write(@"            {{""{0}"", ""{1}""}}", emoji.Alternates[j].ToLower(), emoji.Shortname);
-                        //        if (j < emoji.Alternates.Count - 1) {
-                        //            sw.WriteLine(",");
-                        //        }
-                        //    }
-                        //}
                         if (i < emojis.Count - 1) {
                             sw.WriteLine(",");
                         }
