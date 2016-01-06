@@ -126,11 +126,9 @@ namespace Emojione {
             if (ascii) {
                 str = AsciiToShortname(str);
             }
-
             if (str != null) {
                 str = Regex.Replace(str, IGNORE_PATTERN + "|" + SHORTNAME_PATTERN, match => ShortnameToImageCallback(match, unicodeAlt, svg, sprites, awesome), RegexOptions.IgnoreCase);
             }
-
             return str;
         }
 
@@ -210,8 +208,6 @@ namespace Emojione {
         }
 
         private static string ShortnameToImageCallback(Match match, bool unicodeAlt, bool svg, bool sprites, bool awesome) {
-            // TODO: handle svg and/or sprites
-
             // check if the emoji exists in our dictionary
             var shortname = match.Value;
             if (_shortname_to_codepoint.ContainsKey(shortname)) {
@@ -251,7 +247,6 @@ namespace Emojione {
         }
 
         private static string UnicodeToImageCallback(Match match, bool unicodeAlt, bool svg, bool sprites, bool awesome) {
-
             // check if the emoji exists in our dictionary
             var codepoint = ToCodePoint(match.Groups[1].Value);
             if (_codepoint_to_shortname.ContainsKey(codepoint)) {
