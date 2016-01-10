@@ -31,11 +31,16 @@ namespace Codegen {
         public bool Execute() {
             try {
                 // load and parse emoji.json
+                var file = new FileInfo(EmojiFile);
+                Console.WriteLine("Loading " + file.FullName);
+
                 string json = File.ReadAllText(EmojiFile);
                 var emojis = JsonConvert.DeserializeObject<Dictionary<string, Emoji>>(json);
 
                 // write regex patternas and dictionaries to partial class
                 Directory.CreateDirectory(SourceDir);
+                file = new FileInfo(Path.Combine(SourceDir, "Emojione.generated.cs"));
+                Console.WriteLine("Writing code to " + file.FullName);
                 using (StreamWriter sw = new StreamWriter(Path.Combine(SourceDir, "Emojione.generated.cs"), false, Encoding.UTF8)) {
                     sw.WriteLine(@"using System.Collections.Generic;");
                     sw.WriteLine();
@@ -192,6 +197,7 @@ namespace Codegen {
                 }
 
 
+                Console.WriteLine("Done!");
             } catch (Exception e) {
                 Console.WriteLine(e.Message);
                 return false;
