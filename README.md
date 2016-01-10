@@ -1,6 +1,6 @@
 # emojione-cs
 
-A C# implementation of Emojione's lib for converting Unicode emoji characters to :shortnames: and :shortnames: to emoji images etc. 
+A C# implementation of [Emojione's lib](https://github.com/Ranks/emojione) for converting Unicode emoji characters to :shortnames: and :shortnames: to emoji images etc. 
 
 ## Build
 
@@ -28,7 +28,7 @@ Takes an input string containing both native unicode emoji and shortnames, and t
 ---
 
 `Emojione.ShortnameToAscii()`  
-Replaces shortnames with their ascii equivalent, e.g. :smile: -> :)  This is useful for systems that don't support unicode or images.
+Replaces shortnames with their ascii equivalent.  This is useful for systems that don't support unicode or images.
 
 `Emojione.ShortnameToUnicode()`  
 Converts shortname emojis to unicode, useful for sending emojis back to mobile devices.
