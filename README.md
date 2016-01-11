@@ -28,10 +28,10 @@ Takes an input string containing both native unicode emoji and shortnames, and t
 ---
 
 `Emojione.ShortnameToAscii()`  
-Replaces shortnames with their ascii equivalent.  This is useful for systems that don't support unicode or images.
+Replaces shortnames with their ascii equivalent. This is useful for systems that don't support unicode or images.
 
 `Emojione.ShortnameToUnicode()`  
-Converts shortname emojis to unicode, useful for sending emojis back to mobile devices.
+Converts shortname emoji to unicode, useful for sending emoji back to mobile devices.
 
 `Emojione.UnifyUnicode()`  
 Unifies all emoji to their standard unicode types. 
