@@ -46,9 +46,9 @@ namespace Emojione {
         private static string ImagePathSvgSprites { get; set; } = "./../assets/sprites/emojione.sprites.svg";
 
         /// <summary>
-        /// You can [optionally] modify this to force browsers to refresh their cache. it will be appended to the end of the filenames.
+        /// You can [optionally] modify this to force browsers to refresh their cache, it will be appended to the end of the filenames.
         /// </summary>
-        private static string CacheBustParam { get; set; } = "?v=1.2.4";
+        internal static string CacheBustParam { get; set; } = "?v=2.2.6";
 
         /// <summary>
         /// Takes an input string containing both native unicode emoji and shortnames, and translates it into emoji images for display.
