@@ -273,7 +273,7 @@ namespace Emojione {
                     }
                 } else {
                     if (sprites) {
-                        return string.Format(@"<span class=""emojione-{0}"" title=""{1}"">{2}</span>", codepoint, shortname, unicodeAlt ? alt : shortname);
+                        return string.Format(@"<span class=""emojione emojione-{0}"" title=""{1}"">{2}</span>", codepoint, shortname, unicodeAlt ? alt : shortname);
                     } else {
                         return string.Format(@"<img class=""emojione"" alt=""{0}"" src=""{1}{2}.png{3}"" />", unicodeAlt ? alt : shortname, ImagePathPng, codepoint, CacheBustParam);
                     }
