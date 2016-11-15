@@ -167,18 +167,17 @@ namespace Emojione {
       return Regex.Split(str, UNICODE_PATTERN).Select(s => GetInlineWithString(s, size)).ToList();
     }
     public static Inline GetInlineWithString(string str, int size = 12) {
-      if (!Regex.IsMatch(str, UNICODE_PATTERN)) return new Run(str);  
-      return new InlineUIContainer(new Image {
-          Source = new BitmapImage(new Uri(UnicodeToImageUrlCallback(str))),
-          Height = size,
-          Width = size
-      });
+      if (!Regex.IsMatch(str, UNICODE_PATTERN)) return new Run(str);
+      var path = UnicodeToImageUrlCallback(str);
+      if (path == null) return new Run(str);
+      return new InlineUIContainer(new Image { Source = new BitmapImage(new Uri(path)), Height = size, Width = size });
     }
     public static string UnicodeToImageUrlCallback(string emoji) {
-      string literal = CODEPOINTS.ContainsKey(emoji) ? CODEPOINTS[emoji] : ToCodePoint(emoji);
-      if (CODEPOINT_TO_SHORTNAME.ContainsKey(literal))
-        return string.Format(@"{0}{1}.png", LocalImagePathPng, literal);
-      return null;
+      // Remove the variation modifier (if it is present) - the PNG names do not include it.
+      if (emoji.Length == 2 && emoji[1] == '\uFE0F')
+        emoji = emoji.Substring(0, 1);
+      if (!CODEPOINTS.ContainsKey(emoji)) return null;
+      return string.Format(@"{0}{1}.png", LocalImagePathPng, CODEPOINTS[emoji]);
     }
 
 
