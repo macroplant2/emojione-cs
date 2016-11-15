@@ -20,8 +20,12 @@
 //  SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Media.Imaging;
 
 namespace Emojione {
 
@@ -156,12 +160,44 @@ namespace Emojione {
             return str;
         }
 
-        /// <summary>
-        /// Converts ascii emoji to unicode, e.g. :) -> 😄
-        /// </summary>
-        /// <param name="str"></param>
-        /// <returns></returns>
-        public static string AsciiToUnicode(string str) {
+    public static List<Inline> UnicodeToInlines(string str, int size = 12, bool unicodeAlt = true, bool svg = false, bool sprites = false, bool awesome = false) {
+      if (str != null) {
+        var s = Regex.Split(str, UNICODE_PATTERN).ToList();
+        return s.Select(x => GetInlineWithString(x, size)).ToList();
+      }
+      return null;
+    }
+    public static Inline GetInlineWithString(string x, int size = 12) {
+      Inline rtn;
+      if (!Regex.IsMatch(x, UNICODE_PATTERN))
+        rtn = new Run(x);
+      else {
+        var img = new Image();
+        img.Source = new BitmapImage(new Uri(UnicodeToImageUrlCallback(x)));
+        img.Height = size;
+        img.Width = size;
+        rtn = new InlineUIContainer(img);
+      }
+      return rtn;
+    }
+    public static string UnicodeToImageUrlCallback(string x) {
+      // check if the emoji exists in our dictionaries
+      var codepoint = ToCodePoint(x);
+      if (CODEPOINT_TO_SHORTNAME.ContainsKey(codepoint)) {
+        var shortname = CODEPOINT_TO_SHORTNAME[codepoint];
+        return string.Format(@"http:{0}{1}.png{2}", ImagePathPng, codepoint, CacheBustParam);
+      }
+      return null;
+      // we didn't find a replacement so just return the entire match
+    }
+
+
+    /// <summary>
+    /// Converts ascii emoji to unicode, e.g. :) -> 😄
+    /// </summary>
+    /// <param name="str"></param>
+    /// <returns></returns>
+    public static string AsciiToUnicode(string str) {
             if (str != null) {
                 str = Regex.Replace(str, IGNORE_PATTERN + "|" + ASCII_PATTERN, AsciiToUnicodeCallback);
             }
