@@ -164,10 +164,10 @@ namespace Emojione {
 
     public static List<Inline> UnicodeToInlines(string str, int size = 12, bool unicodeAlt = true, bool svg = false, bool sprites = false, bool awesome = false) {
       if (str == null) return null;
-      return Regex.Split(str, UNICODE_PATTERN).Select(s => GetInlineWithString(s, size)).ToList();
+      return UnicodeRegex.Split(str).Select(s => GetInlineWithString(s, size)).ToList();
     }
     public static Inline GetInlineWithString(string str, int size = 12) {
-      if (!Regex.IsMatch(str, UNICODE_PATTERN)) return new Run(str);
+      if (!UnicodeRegex.IsMatch(str)) return new Run(str);
       var path = UnicodeToImageUrlCallback(str);
       if (path == null) return new Run(str);
       return new InlineUIContainer(new Image { Source = new BitmapImage(new Uri(path)), Height = size, Width = size });
