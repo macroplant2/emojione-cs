@@ -47,9 +47,6 @@ namespace Emojione {
       return new InlineUIContainer(new Image { Source = new BitmapImage(new Uri(path)), Height = size, Width = size });
     }
     public static string UnicodeToImageUrlCallback(string emoji) {
-      // Remove the variation modifier (if it is present) - the PNG names do not include it.
-      if (emoji.Length == 2 && emoji[1] == '\uFE0F')
-        emoji = emoji.Substring(0, 1);
       if (!Codepoints.ContainsKey(emoji)) return null;
       return string.Format(@"{0}{1}.png", LocalImagePathPng, Codepoints[emoji]);
     }
