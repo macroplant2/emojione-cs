@@ -50,8 +50,8 @@ namespace Emojione {
       // Remove the variation modifier (if it is present) - the PNG names do not include it.
       if (emoji.Length == 2 && emoji[1] == '\uFE0F')
         emoji = emoji.Substring(0, 1);
-      if (!CODEPOINTS.ContainsKey(emoji)) return null;
-      return string.Format(@"{0}{1}.png", LocalImagePathPng, CODEPOINTS[emoji]);
+      if (!Codepoints.ContainsKey(emoji)) return null;
+      return string.Format(@"{0}{1}.png", LocalImagePathPng, Codepoints[emoji]);
     }
   }
 }
