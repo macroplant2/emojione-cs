@@ -9,7 +9,12 @@ namespace Emojione {
     private static readonly Regex UnicodeRegex;
     
     static Emojione() {
-      UnicodeRegex = new Regex($"({string.Join("|", AllSequences.Select(s => Regex.Escape(s)))})");
+      var all = AllSequences.SelectMany(s => {
+        if (s[s.Length - 1] == '\uFE0F' && (s.Length > 2 || s[0] > '\u2122'))
+          return new[] { Regex.Escape(s), Regex.Escape(s.Substring(0, s.Length - 1)) + $"(?!{Regex.Escape("\uFE0E")})" };
+        return new[] { Regex.Escape(s) };
+      });
+      UnicodeRegex = new Regex($"({string.Join("|", all)})");
     }
 
     // This must be kept in sync with the CODEPOINTS dictionary.
