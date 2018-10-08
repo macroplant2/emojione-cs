@@ -3869,7 +3869,7 @@ namespace Emojione {
       "\uD83D\uDCB3",
       "\uD83D\uDD30",
       "\uD83D\uDD31",
-      "uD83D\uDCB4",
+      "\uD83D\uDCB4",
       "\uD83D\uDD32",
       "\uD83D\uDD33",
       "\uD83D\uDCB5",
