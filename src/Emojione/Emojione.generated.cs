@@ -6,7 +6,8 @@ using System.Text.RegularExpressions;
 namespace Emojione {
 
   public static partial class Emojione {
-    private static readonly Regex UnicodeRegex;
+    private static readonly Regex SingleEmojiRegex;
+    private static readonly Regex ShortEmojiSequenceRegex;
     
     static Emojione() {
       var all = AllSequences.SelectMany(s => {
@@ -14,7 +15,9 @@ namespace Emojione {
           return new[] { Regex.Escape(s), Regex.Escape(s.Substring(0, s.Length - 1)) + $"(?!{Regex.Escape("\uFE0E")})" };
         return new[] { Regex.Escape(s) };
       });
-      UnicodeRegex = new Regex($"({string.Join("|", all)})");
+      var basePattern = string.Join("|", all);
+      SingleEmojiRegex = new Regex($"({basePattern})");
+      ShortEmojiSequenceRegex = new Regex($"^({basePattern}){{1,3}}$");
     }
 
     // This must be kept in sync with the CODEPOINTS dictionary.

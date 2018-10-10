@@ -36,12 +36,13 @@ namespace Emojione {
 
     private static string LocalImagePathPng { get; set; } = "pack://application:,,,/Emojione;component/PNGs/";
 
+    public static bool IsShortEmojiOnlySequence(string str) { return ShortEmojiSequenceRegex.IsMatch(str); }
     public static List<Inline> UnicodeToInlines(string str, int size) {
       if (str == null) return null;
-      return UnicodeRegex.Split(str).Select(s => GetInlineWithString(s, size)).ToList();
+      return SingleEmojiRegex.Split(str).Select(s => GetInlineWithString(s, size)).ToList();
     }
     public static Inline GetInlineWithString(string str, int size) {
-      if (!UnicodeRegex.IsMatch(str)) return new Run(str);
+      if (!SingleEmojiRegex.IsMatch(str)) return new Run(str);
       var path = UnicodeToImageUrlCallback(str);
       if (path == null) return new Run(str);
       return new InlineUIContainer(new Image { Source = new BitmapImage(new Uri(path)), Height = size, Width = size });
