@@ -36,11 +36,11 @@ namespace Emojione {
 
     private static string LocalImagePathPng { get; set; } = "pack://application:,,,/Emojione;component/PNGs/";
 
-    public static List<Inline> UnicodeToInlines(string str, int size = 12, bool unicodeAlt = true, bool svg = false, bool sprites = false, bool awesome = false) {
+    public static List<Inline> UnicodeToInlines(string str, int size) {
       if (str == null) return null;
       return UnicodeRegex.Split(str).Select(s => GetInlineWithString(s, size)).ToList();
     }
-    public static Inline GetInlineWithString(string str, int size = 12) {
+    public static Inline GetInlineWithString(string str, int size) {
       if (!UnicodeRegex.IsMatch(str)) return new Run(str);
       var path = UnicodeToImageUrlCallback(str);
       if (path == null) return new Run(str);
