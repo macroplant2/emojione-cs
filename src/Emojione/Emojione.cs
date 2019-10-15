@@ -53,7 +53,7 @@ namespace Emojione {
         if (!Codepoints.ContainsKey(emoji)) return null;
       }
       
-      return string.Format(@"{0}{1}.png", LocalImagePathPng, Codepoints[emoji]);
+      return string.Format(@"{0}emoji_u{1}.png", LocalImagePathPng, Codepoints[emoji]);
     }
   }
 }
