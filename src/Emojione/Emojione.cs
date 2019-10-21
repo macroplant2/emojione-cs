@@ -45,7 +45,13 @@ namespace Emojione {
       if (!SingleEmojiRegex.IsMatch(str)) return new Run(str);
       var path = UnicodeToImageUrlCallback(str);
       if (path == null) return new Run(str);
-      return new InlineUIContainer(new Image { Source = new BitmapImage(new Uri(path)), Height = size, Width = size });
+      var image = new Image {
+        Source = new BitmapImage(new Uri(path)),
+        Height = size,
+        Width = size,
+        Margin = new System.Windows.Thickness { Left = 2, Right = 2, Top = 0, Bottom = 0 }
+      };
+      return new InlineUIContainer(image);
     }
     public static string UnicodeToImageUrlCallback(string emoji) {
       if (!Codepoints.ContainsKey(emoji)) {
