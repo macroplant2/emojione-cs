@@ -41,10 +41,13 @@ namespace Emojione {
       if (str == null) return null;
       return SingleEmojiRegex.Split(str).Select(s => GetInlineWithString(s, size)).ToList();
     }
+
+    private static Regex presentationSelectors = new Regex("\uFE0E|\uFE0F");
+
     public static Inline GetInlineWithString(string str, int size) {
-      if (!SingleEmojiRegex.IsMatch(str)) return new Run(str);
+      if (!SingleEmojiRegex.IsMatch(str)) return new Run(presentationSelectors.Replace(str, ""));
       var path = UnicodeToImageUrlCallback(str);
-      if (path == null) return new Run(str);
+      if (path == null) return new Run(presentationSelectors.Replace(str, ""));
       var image = new Image {
         Source = new BitmapImage(new Uri(path)),
         Height = size,
